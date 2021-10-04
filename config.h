@@ -150,6 +150,8 @@ static Key keys[] = {
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_e,      quit,           {0} },
+	{ MODKEY|ShiftMask,     XK_semicolon,      spawn,          SHCMD("setxkbmap us") },
+	{ MODKEY|ShiftMask,             XK_z,      spawn,          SHCMD("setxkbmap us dvorak") },
 
     /* Multimedia */
 	{ 0,                            XK_Print,  spawn,          SHCMD("maim -u | tee ~/pictures/screenshot/`date +%Y-%m-%d-%T`.png | xclip -selection clipboard -t image/png -i") },
