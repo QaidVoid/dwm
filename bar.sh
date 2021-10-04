@@ -2,17 +2,44 @@
 
 PREV_TOTAL=0
 PREV_IDLE=0
+THERMAL_ZONE=""
 
-cpu_temp() {
-  temp=0
+BG_COLOR="^b#5EA1AC^"
+BG_RESET="^b#2E3440^"
+CL_COLOR="^c#D8DEE9^"
+FG_COLOR="^c#ABB9CF^"
+
+NORM_TEMP=45
+CRIT_TEMP=75
+
+IDLE_COLOR="^c#1E90FF^"
+NORM_COLOR="^c#32CD32^"
+CRIT_COLOR="^c#FF4500^"
+
+thermal_zone() {
   for f in /sys/class/thermal/thermal_zone*
   do
     if [ "$(cat $f/type)" = "x86_pkg_temp" ]; then
-      temp=$(cat $f/temp) 
+      THERMAL_ZONE="$f"
       break
     fi
   done
-  printf "$((temp / 1000))"
+}
+
+thermal_zone
+
+cpu_temp() {
+  temp=0
+  temp=$(cat $THERMAL_ZONE/temp) 
+  temp="$((temp / 1000))"
+  if [ "$temp" -gt "$CRIT_TEMP" ]; then
+      printf "$CRIT_COLOR"
+  elif [ "$temp" -gt "$NORM_TEMP" ]; then
+      printf "$NORM_COLOR"
+  else
+      printf "$IDLE_COLOR"
+  fi
+  printf "$temp"
 }
 
 # https://www.mail-archive.com/linuxkernelnewbies@googlegroups.com/msg01690.html
@@ -38,15 +65,15 @@ cpu_usage() {
 }
 
 kbd() {
-  printf "^c#33fcaf^   $(setxkbmap -query | awk '/layout/{ print $2 }')"
+  printf "$BG_COLOR $CL_COLOR  $BG_RESET$FG_COLOR $(setxkbmap -query | awk '/layout/{ print $2 }')"
 }
 
 cpu() {
-  printf "^c#56b6c2^  $DIFF_USAGE%% ($(cpu_temp)°C)"
+  printf "$BG_COLOR $CL_COLOR  $BG_RESET$FG_COLOR $DIFF_USAGE%% $(cpu_temp)°C"
 }
 
 mem() {
-  printf "^c#ff6347^  $(free -h | awk 'NR==2{print $3}')"
+  printf "$BG_COLOR $CL_COLOR $BG_RESET$FG_COLOR $(free -h | awk 'NR==2{print $3}')"
 }
 
 vol() {
@@ -58,16 +85,16 @@ vol() {
   else
     icon=""
   fi
-  printf "^c#b1a1c1^ 墳 $vol%%"
+  printf "$BG_COLOR $CL_COLOR墳 $BG_RESET$FG_COLOR $vol%%"
 }
 
 disk() {
   hdd="$(df -h | awk 'NR==2{print $4}')"
-  printf "^c#a6d39f^  $hdd" 
+  printf "$BG_COLOR $CL_COLOR $BG_RESET$FG_COLOR $hdd" 
 }
 
 clock() {
-  printf "^c#a2c4cf^  $(date '+%d %B at %k:%M:%S') "
+  printf "$BG_COLOR $CL_COLOR $BG_RESET$FG_COLOR $(date '+%d %B at %k:%M:%S') "
 }
 
 while true; do
