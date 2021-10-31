@@ -5,6 +5,7 @@ include config.mk
 
 SRC = drw.c dwm.c util.c
 OBJ = ${SRC:.c=.o}
+LOGNAME = $(shell logname)
 
 all: options dwm
 
@@ -43,6 +44,9 @@ install: all
 	mkdir -p ${DESTDIR}${MANPREFIX}/man1
 	sed "s/VERSION/${VERSION}/g" < dwm.1 > ${DESTDIR}${MANPREFIX}/man1/dwm.1
 	chmod 644 ${DESTDIR}${MANPREFIX}/man1/dwm.1
+	mkdir -p /home/${LOGNAME}/.local/share/dwm
+	cp -f {layoutmenu.sh,bar.sh} /home/${LOGNAME}/.local/share/dwm
+	chmod 755 /home/${LOGNAME}/.local/share/dwm/{bar.sh,layoutmenu.sh}
 
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/dwm\
